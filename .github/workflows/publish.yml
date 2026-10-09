@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
@@ -20,6 +20,26 @@ jobs:
 
       - name: Test image
         run: docker buildx build --file Containerfile --load --target test --tag nro-workbench:test .
+
+      - name: Build and test the Apptainer image
+        shell: bash
+        run: |
+          curl --fail --location --output /tmp/apptainer.deb \
+            https://github.com/apptainer/apptainer/releases/download/v1.4.5/apptainer_1.4.5_amd64.deb
+          sudo apt-get update
+          sudo apt-get install --yes /tmp/apptainer.deb xvfb
+          apptainer build nro-workbench.sif docker-daemon://nro-workbench:test
+          apptainer exec nro-workbench.sif wb_command -version
+          set +e
+          timeout 8s xvfb-run -a apptainer exec nro-workbench.sif wb_view \
+            >/tmp/wb-view.log 2>&1
+          status=$?
+          set -e
+          if [[ $status -ne 124 ]]; then
+            cat /tmp/wb-view.log
+            exit 1
+          fi
+          sha256sum nro-workbench.sif > nro-workbench.sif.sha256
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -54,10 +74,11 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.version=${{ steps.image.outputs.version }}
 
-      - name: Make the package public
+      - name: Publish the Apptainer release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh api --method PATCH \
-            "/orgs/${{ github.repository_owner }}/packages/container/nro-workbench" \
-            -f visibility=public
+          gh release create "$GITHUB_REF_NAME" \
+            nro-workbench.sif nro-workbench.sif.sha256 \
+            --title "nro Workbench ${GITHUB_REF_NAME#v}" \
+            --notes "Self-contained Connectome Workbench 2.2.1 runtime for nro. The image passed command-line and X11 GUI smoke tests before publication."

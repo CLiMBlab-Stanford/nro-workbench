@@ -3,7 +3,8 @@
 This repository builds the Connectome Workbench runtime used by nro for native
 scene viewing and headless rendering. The image contains Workbench's Linux GUI,
 Qt runtime, Mesa software renderer, X11 client libraries, fonts, and the
-corresponding Workbench source archive.
+corresponding Workbench source archive. Tagged releases include a tested
+Apptainer SIF and its SHA-256 checksum as well as the equivalent OCI image.
 
 The image does not contain study data. Bind project paths into the container at
 their original absolute locations so paths stored in Workbench scenes continue
