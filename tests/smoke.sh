@@ -4,13 +4,16 @@ set -eu
 version=$(wb_command -version)
 printf '%s\n' "$version" | grep -F "Version: ${WORKBENCH_VERSION}"
 
-for executable in /opt/workbench/exe_linux64/wb_command /opt/workbench/exe_linux64/wb_view; do
-    missing=$(LD_LIBRARY_PATH=/opt/workbench/libs_linux64 ldd "$executable" | grep "not found" || true)
-    if [ -n "$missing" ]; then
-        printf '%s\n' "$missing" >&2
-        exit 1
-    fi
-done
+command_libraries=/opt/workbench/libs_linux64:/opt/workbench/libs_linux64/osmesa
+viewer_libraries=/opt/workbench/libs_linux64
+command_missing=$(LD_LIBRARY_PATH="$command_libraries" \
+    ldd /opt/workbench/exe_linux64/wb_command | grep "not found" || true)
+viewer_missing=$(LD_LIBRARY_PATH="$viewer_libraries" \
+    ldd /opt/workbench/exe_linux64/wb_view | grep "not found" || true)
+if [ -n "$command_missing$viewer_missing" ]; then
+    printf '%s\n%s\n' "$command_missing" "$viewer_missing" >&2
+    exit 1
+fi
 
 Xvfb :99 -screen 0 1280x1024x24 -nolisten tcp >/tmp/xvfb.log 2>&1 &
 xvfb_pid=$!
