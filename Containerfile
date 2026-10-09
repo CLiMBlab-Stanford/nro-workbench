@@ -9,7 +9,7 @@ LABEL org.opencontainers.image.title="nro Workbench runtime" \
       org.opencontainers.image.description="Connectome Workbench with a self-contained Linux GUI and rendering runtime" \
       org.opencontainers.image.source="https://github.com/CLiMBlab-Stanford/nro-workbench" \
       org.opencontainers.image.licenses="GPL-3.0-or-later" \
-      org.opencontainers.image.version="${WORKBENCH_VERSION}-2" \
+      org.opencontainers.image.version="${WORKBENCH_VERSION}-3" \
       org.opencontainers.image.revision="${WORKBENCH_COMMIT}"
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -22,6 +22,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
         libgl1 \
         libgl1-mesa-dri \
         libglib2.0-0 \
+        libgomp1 \
         libglu1-mesa \
         libglx0 \
         libopengl0 \
