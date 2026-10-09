@@ -21,6 +21,9 @@ jobs:
       - name: Test image
         run: docker buildx build --file Containerfile --load --target test --tag nro-workbench:test .
 
+      - name: Build release image
+        run: docker buildx build --file Containerfile --load --target release --tag nro-workbench:release .
+
       - name: Build and test the Apptainer image
         shell: bash
         run: |
@@ -28,7 +31,7 @@ jobs:
             https://github.com/apptainer/apptainer/releases/download/v1.4.5/apptainer_1.4.5_amd64.deb
           sudo apt-get update
           sudo apt-get install --yes /tmp/apptainer.deb xvfb
-          apptainer build nro-workbench.sif docker-daemon://nro-workbench:test
+          apptainer build nro-workbench.sif docker-daemon://nro-workbench:release
           apptainer exec nro-workbench.sif wb_command -version
           set +e
           timeout 8s xvfb-run -a apptainer exec nro-workbench.sif wb_view \
