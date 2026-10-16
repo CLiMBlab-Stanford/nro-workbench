@@ -45,6 +45,7 @@ jobs:
             nro-workbench.sif wb_command -version
           set +e
           timeout 8s xvfb-run -a apptainer exec --cleanenv \
+            --env DISPLAY="$DISPLAY" \
             --env LD_LIBRARY_PATH=/invalid \
             --env QT_PLUGIN_PATH=/invalid \
             nro-workbench.sif wb_view \
