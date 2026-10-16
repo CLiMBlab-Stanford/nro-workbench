@@ -30,7 +30,7 @@ jobs:
           curl --fail --location --output /tmp/apptainer.deb \
             https://github.com/apptainer/apptainer/releases/download/v1.4.5/apptainer_1.4.5_amd64.deb
           sudo apt-get update
-          sudo apt-get install --yes /tmp/apptainer.deb xvfb
+          sudo apt-get install --yes /tmp/apptainer.deb
           apptainer build nro-workbench.sif docker-daemon://nro-workbench:release
           apptainer exec --cleanenv nro-workbench.sif sh -c '
             case ":$LD_LIBRARY_PATH:" in
@@ -44,11 +44,11 @@ jobs:
             --env QT_PLUGIN_PATH=/invalid \
             nro-workbench.sif wb_command -version
           set +e
-          timeout 8s xvfb-run -a sh -c 'exec apptainer exec --cleanenv \
-            --env "DISPLAY=$DISPLAY" \
+          timeout 8s apptainer exec --cleanenv \
+            --env QT_QPA_PLATFORM=offscreen \
             --env LD_LIBRARY_PATH=/invalid \
             --env QT_PLUGIN_PATH=/invalid \
-            nro-workbench.sif wb_view' \
+            nro-workbench.sif wb_view \
             >/tmp/wb-view.log 2>&1
           status=$?
           set -e
