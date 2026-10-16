@@ -32,6 +32,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes /tmp/apptainer.deb xvfb
           apptainer build nro-workbench.sif docker-daemon://nro-workbench:release
+          apptainer exec --cleanenv nro-workbench.sif sh -c \
+            'test "$LD_LIBRARY_PATH" = /opt/workbench/libs_linux64 &&
+             test "$QT_PLUGIN_PATH" = /opt/workbench/libs_linux64/plugins'
           apptainer exec nro-workbench.sif wb_command -version
           set +e
           timeout 8s xvfb-run -a apptainer exec nro-workbench.sif wb_view \

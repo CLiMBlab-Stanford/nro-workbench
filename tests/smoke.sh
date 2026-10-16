@@ -1,6 +1,9 @@
 #!/bin/sh
 set -eu
 
+test "$LD_LIBRARY_PATH" = /opt/workbench/libs_linux64
+test "$QT_PLUGIN_PATH" = /opt/workbench/libs_linux64/plugins
+
 version=$(wb_command -version)
 printf '%s\n' "$version" | grep -F "Version: ${WORKBENCH_VERSION}"
 

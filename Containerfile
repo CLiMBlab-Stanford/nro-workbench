@@ -9,7 +9,7 @@ LABEL org.opencontainers.image.title="nro Workbench runtime" \
       org.opencontainers.image.description="Connectome Workbench with a self-contained Linux GUI and rendering runtime" \
       org.opencontainers.image.source="https://github.com/CLiMBlab-Stanford/nro-workbench" \
       org.opencontainers.image.licenses="GPL-3.0-or-later" \
-      org.opencontainers.image.version="${WORKBENCH_VERSION}-7" \
+      org.opencontainers.image.version="${WORKBENCH_VERSION}-8" \
       org.opencontainers.image.revision="${WORKBENCH_COMMIT}"
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -61,7 +61,9 @@ RUN set -eu; \
 
 ENV PATH="/opt/workbench/bin_linux64:${PATH}" \
     LC_ALL=C.UTF-8 \
+    LD_LIBRARY_PATH="/opt/workbench/libs_linux64" \
     LIBGL_ALWAYS_SOFTWARE=1 \
+    QT_PLUGIN_PATH="/opt/workbench/libs_linux64/plugins" \
     QT_X11_NO_MITSHM=1 \
     WORKBENCH_VERSION=2.2.1
 
