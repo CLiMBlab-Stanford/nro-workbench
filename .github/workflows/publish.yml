@@ -39,9 +39,15 @@ jobs:
             esac
             test "$QT_PLUGIN_PATH" = /opt/workbench/libs_linux64/plugins
           '
-          apptainer exec nro-workbench.sif wb_command -version
+          apptainer exec --cleanenv \
+            --env LD_LIBRARY_PATH=/invalid \
+            --env QT_PLUGIN_PATH=/invalid \
+            nro-workbench.sif wb_command -version
           set +e
-          timeout 8s xvfb-run -a apptainer exec nro-workbench.sif wb_view \
+          timeout 8s xvfb-run -a apptainer exec --cleanenv \
+            --env LD_LIBRARY_PATH=/invalid \
+            --env QT_PLUGIN_PATH=/invalid \
+            nro-workbench.sif wb_view \
             >/tmp/wb-view.log 2>&1
           status=$?
           set -e

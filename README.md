@@ -23,11 +23,14 @@ mutable tag.
 
 ## Display forwarding
 
-The image selects Workbench's bundled libraries and Qt plugins when it starts
-and defaults to Mesa software rendering. For an SSH-forwarded display, pass the
-current `DISPLAY` value and mount a readable Xauthority file. Local Unix-socket
-displays additionally need `/tmp/.X11-unix` mounted into the container. nro
-supplies these arguments through its viewer broker.
+The image's command and viewer entrypoints select their distinct bundled
+library sets directly through the container's dynamic loader. This remains
+reliable when a host or container runtime overrides loader environment
+variables. The image also selects its bundled Qt plugins and defaults to Mesa
+software rendering. For an SSH-forwarded display, pass the current `DISPLAY`
+value and mount a readable Xauthority file. Local Unix-socket displays
+additionally need `/tmp/.X11-unix` mounted into the container. nro supplies
+these arguments through its viewer broker.
 
 Example:
 

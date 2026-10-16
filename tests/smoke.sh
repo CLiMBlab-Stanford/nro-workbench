@@ -3,8 +3,10 @@ set -eu
 
 test "$LD_LIBRARY_PATH" = /opt/workbench/libs_linux64
 test "$QT_PLUGIN_PATH" = /opt/workbench/libs_linux64/plugins
+test "$(command -v wb_command)" = /usr/local/bin/wb_command
+test "$(command -v wb_view)" = /usr/local/bin/wb_view
 
-version=$(wb_command -version)
+version=$(LD_LIBRARY_PATH=/invalid QT_PLUGIN_PATH=/invalid wb_command -version)
 printf '%s\n' "$version" | grep -F "Version: ${WORKBENCH_VERSION}"
 
 command_libraries=/opt/workbench/libs_linux64:/opt/workbench/libs_linux64/osmesa
@@ -22,6 +24,8 @@ Xvfb :99 -screen 0 1280x1024x24 -nolisten tcp >/tmp/xvfb.log 2>&1 &
 xvfb_pid=$!
 trap 'kill "$xvfb_pid" 2>/dev/null || true' EXIT INT TERM
 export DISPLAY=:99
+export LD_LIBRARY_PATH=/invalid
+export QT_PLUGIN_PATH=/invalid
 sleep 1
 wb_view >/tmp/wb-view.log 2>&1 &
 viewer_pid=$!

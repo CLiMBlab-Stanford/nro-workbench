@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+
+export LC_ALL=C.UTF-8
+export QT_PLUGIN_PATH=/opt/workbench/libs_linux64/plugins
+exec /lib64/ld-linux-x86-64.so.2 \
+    --library-path /opt/workbench/libs_linux64:/opt/workbench/libs_linux64/osmesa \
+    /opt/workbench/exe_linux64/wb_command "$@"
