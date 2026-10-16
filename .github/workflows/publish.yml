@@ -44,11 +44,11 @@ jobs:
             --env QT_PLUGIN_PATH=/invalid \
             nro-workbench.sif wb_command -version
           set +e
-          timeout 8s xvfb-run -a apptainer exec --cleanenv \
-            --env DISPLAY="$DISPLAY" \
+          timeout 8s xvfb-run -a sh -c 'exec apptainer exec --cleanenv \
+            --env "DISPLAY=$DISPLAY" \
             --env LD_LIBRARY_PATH=/invalid \
             --env QT_PLUGIN_PATH=/invalid \
-            nro-workbench.sif wb_view \
+            nro-workbench.sif wb_view' \
             >/tmp/wb-view.log 2>&1
           status=$?
           set -e
