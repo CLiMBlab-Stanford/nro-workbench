@@ -9,7 +9,7 @@ LABEL org.opencontainers.image.title="nro Workbench runtime" \
       org.opencontainers.image.description="Connectome Workbench with a self-contained Linux GUI and rendering runtime" \
       org.opencontainers.image.source="https://github.com/CLiMBlab-Stanford/nro-workbench" \
       org.opencontainers.image.licenses="GPL-3.0-or-later" \
-      org.opencontainers.image.version="${WORKBENCH_VERSION}-13" \
+      org.opencontainers.image.version="${WORKBENCH_VERSION}-14" \
       org.opencontainers.image.revision="${WORKBENCH_COMMIT}"
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -46,6 +46,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     && rm -rf /var/lib/apt/lists/*
 
 RUN set -eu; \
+    apt-get update; \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends binutils; \
     archive=/tmp/workbench.zip; \
     source=/tmp/workbench-source.tar.gz; \
     curl --fail --location --output "$archive" \
@@ -57,7 +59,13 @@ RUN set -eu; \
     echo "${WORKBENCH_SOURCE_SHA256}  $source" | sha256sum --check --strict; \
     install -d /usr/share/source; \
     mv "$source" "/usr/share/source/connectome-workbench-${WORKBENCH_COMMIT}.tar.gz"; \
-    rm "$archive"
+    objcopy --remove-section=.note.ABI-tag /opt/workbench/libs_linux64/libQt6Core.so.6; \
+    if readelf --notes /opt/workbench/libs_linux64/libQt6Core.so.6 | grep -q NT_GNU_ABI_TAG; then \
+        echo "Qt Core still declares a minimum host-kernel ABI" >&2; \
+        exit 1; \
+    fi; \
+    apt-get purge -y --auto-remove binutils; \
+    rm -rf /var/lib/apt/lists/* "$archive"
 
 COPY bin/wb_command bin/wb_view /usr/local/bin/
 

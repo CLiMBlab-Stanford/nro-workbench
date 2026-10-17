@@ -32,6 +32,10 @@ value and mount a readable Xauthority file. Local Unix-socket displays
 additionally need `/tmp/.X11-unix` mounted into the container. nro supplies
 these arguments through its viewer broker.
 
+The image removes Qt Core's minimum-kernel ABI note. Qt's runtime fallbacks can
+therefore operate on Linux 3.10 cluster hosts instead of being rejected by the
+dynamic loader before startup.
+
 Example:
 
 ```bash
